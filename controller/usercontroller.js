@@ -1,8 +1,90 @@
 import User from "../models/userModel.js";
+import jwt from 'jsonwebtoken';
+import bcrypt from "bcrypt";
+
+// // register user
+
+export const userRegister = async (req, res) => {
+  try {
+    const {
+      email,
+      password,
+      firstname,
+      lastname,
+      isadmin,
+      phone,
+      profilepic,
+      address,
+    } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(401).json("User already existed");
+    }
+
+    const hashPassword = await bcrypt.hash(password, 12);
+
+    const newUser = new User({
+      email,
+      password: hashPassword,
+      firstname,
+      lastname,
+      isadmin,
+      phone,
+      profilepic,
+      address,
+    });
+
+    await newUser.save();
+
+    res.status(200).json({ message: "Registration successfull" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Registration failed", error: error.message });
+  }
+};
+
+// // Login User
+
+export const userLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "Individual Credentials of user" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+      return res
+        .status(401)
+        .json({ message: "Individual Credentials of password" });
+    }
+    // const { jwt } = pkg;
+
+    const token = jwt.sign(
+      { UserId: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.status(200).json({ message: "LogIn Successful", token });
+  } catch (error) {
+    res.status(500).json({ message: "Login Failed", error: error.message });
+  }
+};
+
+// create User
 
 export const createUser = async (req, res) => {
   try {
-    console.log("OKKK");
+    // console.log("OKKK");
     const {
       email,
       password,
@@ -103,7 +185,3 @@ export const deleteUser = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
-
-
-// Login User
