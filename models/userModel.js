@@ -7,34 +7,41 @@ const userSchema = new mongoose.Schema({
       unique: true,
     },
     password: {
-      type: String, // Changed 'number' to 'String'
+      type: String,
       required: true,
     },
+    confirmPassword: {
+      type: String, 
+      required: true,
+    },
+    resetPasswordOTP: {
+      type: String, 
+    },
     firstname: {
-        type: String,
-        required: true,
-      },
-      lastname: {
-        type: String,
-        required: true,
-      },
-      isadmin: {
-        type: String,
-        required: true,
-      },
-      profilepic: {
-        type: String,
-        required: true,
-      },
-      phone: {
-        type: String,
-        required: true,
-      },
-      address: {
-        type: String,
-        required: true,
-      },
-  });
+      type: String,
+      required: true,
+    },
+    lastname: {
+      type: String,
+      required: true,
+    },
+    isadmin: {
+      type: Boolean,
+      required: true,
+    },
+    profilepic: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+});
 
 const UserModel = mongoose.model("User", userSchema);
 
